@@ -39,7 +39,8 @@ jobs:
           texinfo \
           wget \
           yasm \
-          zlib1g-dev
+          zlib1g-dev \
+          libvpx-dev  # 添加这一行
 
     - name: Download and extract FFmpeg
       run: |
