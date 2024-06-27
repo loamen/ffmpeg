@@ -40,27 +40,29 @@ jobs:
           wget \
           yasm \
           zlib1g-dev \
-          libvpx-dev  # 添加这一行
+          libvpx-dev \
+          libx264-dev \
+          libx265-dev
 
-    - name: Download and extract FFmpeg
+    - name: Clone FFmpeg repository
       run: |
-        wget https://ffmpeg.org/releases/ffmpeg-4.4.tar.bz2
-        tar xjf ffmpeg-4.4.tar.bz2
-        cd ffmpeg-4.4
+        git clone https://git.ffmpeg.org/ffmpeg.git ffmpeg
+        cd ffmpeg
+        git checkout release/4.4
 
     - name: Configure FFmpeg
       run: |
-        cd ffmpeg-4.4
+        cd ffmpeg
         ./configure --prefix=/usr/local --enable-gpl --enable-libass --enable-libfreetype --enable-libvorbis --enable-libvpx --enable-libx264 --enable-libx265 --enable-nonfree
 
     - name: Build FFmpeg
       run: |
-        cd ffmpeg-4.4
+        cd ffmpeg
         make -j$(nproc)
 
     - name: Package FFmpeg
       run: |
-        cd ffmpeg-4.4
+        cd ffmpeg
         make install DESTDIR=$GITHUB_WORKSPACE/ffmpeg-build
         cd $GITHUB_WORKSPACE
         tar -czvf ffmpeg-4.4.tar.gz ffmpeg-build/usr/local
