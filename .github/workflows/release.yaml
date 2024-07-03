@@ -42,8 +42,7 @@ jobs:
           zlib1g-dev \
           libvpx-dev \
           libx264-dev \
-          libx265-dev \
-          libvpx6
+          libx265-dev
 
     - name: Verify libvpx installation
       run: |
