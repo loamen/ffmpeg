@@ -4,7 +4,7 @@ on:
   push:
     tags:
       - 'v*'  # 仅在推送标签时触发
-  workflow_dispatch:  # 允许手动触发
+  workflow_dispatch::  # 允许手动触发
 
 jobs:
   build:
@@ -42,7 +42,12 @@ jobs:
           zlib1g-dev \
           libvpx-dev \
           libx264-dev \
-          libx265-dev
+          libx265-dev \
+          libvpx6
+
+    - name: Verify libvpx installation
+      run: |
+        pkg-config --modversion vpx
 
     - name: Clone FFmpeg repository
       run: |
@@ -53,7 +58,7 @@ jobs:
     - name: Configure FFmpeg
       run: |
         cd ffmpeg
-        ./configure --prefix=/usr/local --enable-gpl --enable-libass --enable-libfreetype --enable-libvorbis --enable-libvpx --enable-libx264 --enable-libx265 --enable-nonfree
+        ./configure --prefix=/usr/local --enable-gpl --enable-libass --enable-libfreetype --enable-libvorbis --enable-libvpx --enable-libx264 --enable-libx265 --enable-nonfree --extra-libs=-lpthread --extra-libs=-lm --enable-shared --disable-static
 
     - name: Build FFmpeg
       run: |
