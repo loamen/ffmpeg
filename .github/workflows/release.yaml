@@ -47,6 +47,16 @@ jobs:
     - name: Verify libvpx installation
       run: |
         pkg-config --modversion vpx
+        pkg-config --modversion x264
+        pkg-config --modversion x265
+        pkg-config --modversion libass
+        pkg-config --modversion freetype2
+        pkg-config --modversion vorbis
+        pkg-config --modversion opus
+        pkg-config --modversion lame
+        pkg-config --modversion xvidcore
+        pkg-config --modversion theora
+        pkg-config --modversion aom
 
     - name: Clone FFmpeg repository
       run: |
@@ -57,7 +67,7 @@ jobs:
     - name: Configure FFmpeg
       run: |
         cd ffmpeg
-        ./configure --prefix=/usr/local --enable-gpl --enable-libass --enable-libfreetype --enable-libvorbis --enable-libvpx --enable-libx264 --enable-libx265 --enable-nonfree --extra-libs=-lpthread --extra-libs=-lm --enable-shared --disable-static
+        ./configure --prefix=/usr/local --enable-gpl --enable-nonfree --enable-libass --enable-libfreetype --enable-libvorbis --enable-libvpx --enable-libx264 --enable-libx265 --enable-libmp3lame --enable-libopus --enable-libxvid --enable-libtheora --enable-libfdk-aac --enable-libopenh264 --enable-openssl --enable-libsvtav1 --enable-libaom --extra-libs=-lpthread --extra-libs=-lm --enable-shared --disable-static
 
     - name: Build FFmpeg
       run: |
@@ -70,6 +80,23 @@ jobs:
         make install DESTDIR=$GITHUB_WORKSPACE/ffmpeg-build
         cd $GITHUB_WORKSPACE
         tar -czvf ffmpeg-4.4.tar.gz ffmpeg-build/usr/local
+
+    - name: Move to release directory
+      run: |
+        mkdir -p release
+        mv ffmpeg-4.4.tar.gz release/
+  
+    - name: Commit and push changes
+      uses: stefanzweifel/git-auto-commit-action@v4
+      with:
+        commit_message: "Add compiled FFmpeg release"
+        file_pattern: "release/*"
+  
+    - name: Push changes
+      uses: ad-m/github-push-action@master
+      with:
+        github_token: ${{ secrets.GITHUB_TOKEN }}
+        branch: ${{ github.ref }}
 
     - name: Create Release
       id: create_release
